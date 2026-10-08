@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Create account{% endblock %}
+{% block page %}
+<div class="auth"><section class="auth-side"><a class="brand" href="/"><span class="brand-mark">L</span>LoanFlow</a><h1>Create your LoanFlow account</h1><p>Apply for a loan and follow every step of the review.</p></section>
+<section class="auth-form"><form method="post" data-loading novalidate>{% csrf_token %}<h1>Register</h1>
+{% if form.errors %}<div class="alert alert-error" role="alert">Please fix the highlighted fields.</div>{% endif %}
+<div class="field"><label for="id_username">Username</label><input class="input" id="id_username" name="username" autocomplete="username" required {% if form.username.errors %}aria-invalid="true"{% endif %}>{% for e in form.username.errors %}<div class="error">{{ e }}</div>{% endfor %}</div>
+<div class="field"><label for="id_email">Email</label><input class="input" id="id_email" name="email" type="email" autocomplete="email" required>{% for e in form.email.errors %}<div class="error">{{ e }}</div>{% endfor %}</div>
+<div class="field"><label for="id_phone">Phone</label><input class="input" id="id_phone" name="phone" type="tel" autocomplete="tel"></div>
+<div class="field"><label for="id_address">Address</label><textarea class="input" id="id_address" name="address" rows="2"></textarea></div>
+<div class="field"><label for="id_role">Role</label><select class="input" id="id_role" name="role"><option value="customer">Customer</option><option value="officer">Loan officer</option></select></div>
+<div class="field"><label for="id_password1">Password</label><div style="display:flex;gap:8px"><input class="input" id="id_password1" name="password1" type="password" autocomplete="new-password" required><button class="btn btn-ghost" type="button" data-toggle-password="#id_password1" aria-pressed="false">Show</button></div><div class="help">At least 8 characters.</div>{% for e in form.password1.errors %}<div class="error">{{ e }}</div>{% endfor %}</div>
+<div class="field"><label for="id_password2">Confirm password</label><input class="input" id="id_password2" name="password2" type="password" autocomplete="new-password" required>{% for e in form.password2.errors %}<div class="error">{{ e }}</div>{% endfor %}</div>
+<div class="field"><label style="font-weight:500"><input type="checkbox" name="terms" required> I agree to the Terms and Privacy Policy</label></div>
+<button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Create account</button>
+<p class="help" style="margin-top:16px">Already registered? <a href="{% url 'login' %}">Log in</a></p></form></section></div>
+{% endblock %}

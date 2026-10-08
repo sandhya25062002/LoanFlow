@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Admin overview{% endblock %}
+{% block sidebar %}
+    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'admin_dashboard' %}">Overview</a>
+    <a class="nav-link {% block nav_users %}{% endblock %}" href="{% url 'users' %}">Users</a>
+    <a class="nav-link {% block nav_apps %}{% endblock %}" href="{% url 'admin_applications' %}">Applications</a>
+    {% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+{% block content %}
+<div class="page-head"><h1>System overview</h1></div>
+<div class="grid stats"><div class="card"><div class="stat-n">{{ stats.users|default:0 }}</div><div class="stat-l">Total users</div></div><div class="card"><div class="stat-n">{{ stats.customers|default:0 }}</div><div class="stat-l">Customers</div></div><div class="card"><div class="stat-n">{{ stats.officers|default:0 }}</div><div class="stat-l">Loan officers</div></div><div class="card"><div class="stat-n">{{ stats.total|default:0 }}</div><div class="stat-l">Applications</div></div><div class="card"><div class="stat-n">{{ stats.pending|default:0 }}</div><div class="stat-l">Pending</div></div><div class="card"><div class="stat-n">{{ stats.approved|default:0 }}</div><div class="stat-l">Approved</div></div><div class="card"><div class="stat-n">{{ stats.rejected|default:0 }}</div><div class="stat-l">Rejected</div></div></div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">
+<section class="card"><h2>Applications by status</h2>{% for row in status_chart %}<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between"><span>{{ row.label }}</span><strong>{{ row.count }}</strong></div><div class="bar"><span data-w="{{ row.pct }}" style="background:var(--navy)"></span></div></div>{% empty %}<p class="help">No data yet.</p>{% endfor %}</section>
+<section class="card"><h2>Recent activity</h2>{% for a in activity %}<p style="margin:0 0 10px">{{ a.text }} <span class="help">{{ a.time|timesince }} ago</span></p>{% empty %}<p class="help">No recent activity.</p>{% endfor %}</section></div>
+<h2 style="margin-top:28px">Recent applications</h2>
+{% if applications %}<div class="table-wrap"><table id="dataTable"><thead><tr><th>ID</th><th>Customer</th><th>Loan type</th><th>Amount</th><th>Status</th></tr></thead><tbody>{% for application in applications %}<tr><td>LF-{{ application.id }}</td><td>{{ application.customer.username }}</td><td>{{ application.loan_type }}</td><td>₹{{ application.amount|floatformat:0 }}</td><td><span class="badge badge-{{ application.status|slugify }}">{{ application.get_status_display }}</span></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="card empty"><h3>No applications yet</h3></div>{% endif %}
+{% endblock %}

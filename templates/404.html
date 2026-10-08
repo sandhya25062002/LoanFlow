@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}Page not found{% endblock %}
+{% block page %}
+<div style="min-height:100vh;display:grid;place-items:center;padding:24px"><div class="card empty" style="max-width:460px">
+  <a class="brand" href="/" style="color:var(--navy);justify-content:center"><span class="brand-mark" style="background:var(--navy);color:#fff">L</span>LoanFlow</a>
+  <p class="stat-n" style="font-size:3rem">404</p><h1>Page not found</h1><p>The link may be outdated or the page may have moved. Check the address or return to a page you know.</p>
+  {% if user.is_authenticated %}<a class="btn btn-primary" href="{% url 'dashboard' %}">Back to dashboard</a> {% endif %}<a class="btn btn-ghost" href="/">Back to home</a></div></div>
+{% endblock %}

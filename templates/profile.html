@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block nav_profile %}active{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Profile</h1><button class="btn btn-primary" type="button" data-modal-open="#editModal">Edit profile</button></div>
+<section class="card" style="max-width:640px"><dl class="kv"><dt>Username</dt><dd>{{ user.username }}</dd><dt>Email</dt><dd>{{ user.email }}</dd><dt>Phone</dt><dd>{{ user.phone|default:"Not added" }}</dd><dt>Address</dt><dd>{{ user.address|default:"Not added" }}</dd><dt>Role</dt><dd>{{ user.get_role_display }}</dd></dl></section>
+<div class="modal" id="editModal" role="dialog" aria-modal="true" aria-labelledby="em"><form class="card" method="post" data-loading>{% csrf_token %}<h2 id="em">Edit profile</h2>
+<div class="field"><label for="e_email">Email</label><input class="input" id="e_email" name="email" type="email" value="{{ user.email }}"></div>
+<div class="field"><label for="e_phone">Phone</label><input class="input" id="e_phone" name="phone" type="tel" value="{{ user.phone }}"></div>
+<div class="field"><label for="e_addr">Address</label><textarea class="input" id="e_addr" name="address" rows="2">{{ user.address }}</textarea></div>
+<button class="btn btn-primary" type="submit">Save changes</button> <button class="btn btn-ghost" type="button" data-modal-close>Cancel</button></form></div>
+{% endblock %}

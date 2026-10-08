@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Users{% endblock %}
+{% block sidebar %}
+    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'admin_dashboard' %}">Overview</a>
+    <a class="nav-link {% block nav_users %}{% endblock %}" href="{% url 'users' %}">Users</a>
+    <a class="nav-link {% block nav_apps %}{% endblock %}" href="{% url 'admin_applications' %}">Applications</a>
+    {% endblock %}
+{% block nav_users %}active{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Users</h1></div><form class="toolbar" method="get" role="search"><div class="field"><label class="skip" for="q">Search</label><input class="input" id="q" name="q" type="search" placeholder="Search" data-table-search></div><div class="field"><label class="skip" for="role">Role</label><select class="input" id="role" name="role"><option value="">All roles</option><option value="customer">Customer</option><option value="officer">Loan officer</option><option value="admin">Admin</option></select></div><div class="field"><label class="skip" for="active">Status</label><select class="input" id="active" name="active"><option value="">All</option><option value="1">Active</option><option value="0">Disabled</option></select></div><button class="btn btn-ghost" type="submit">Apply filters</button></form>
+{% if users %}<div class="table-wrap"><table id="dataTable"><thead><tr><th>User</th><th>Email</th><th>Role</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead><tbody>{% for u in users %}<tr><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.get_role_display }}</td><td>{{ u.date_joined|date:"d M Y" }}</td><td><span class="badge {% if u.is_active %}badge-approved{% else %}badge-rejected{% endif %}">{% if u.is_active %}Active{% else %}Disabled{% endif %}</span></td><td><a href="#">View</a> · <a href="#">Edit</a> · <form method="post" action="#" style="display:inline">{% csrf_token %}<button class="btn btn-ghost" type="submit">{% if u.is_active %}Disable{% else %}Enable{% endif %}</button></form></td></tr>{% endfor %}</tbody></table></div>{% if is_paginated %}<nav class="pager" aria-label="Pagination">{% if page_obj.has_previous %}<a class="btn btn-ghost" href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}<span class="btn btn-ghost" aria-current="page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>{% if page_obj.has_next %}<a class="btn btn-ghost" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}</nav>{% endif %}
+{% else %}<div class="card empty"><h3>No users match</h3><p>Try a different search or filter.</p></div>{% endif %}
+{% endblock %}

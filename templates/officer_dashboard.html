@@ -1,0 +1,302 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Officer Dashboard
+{% endblock %}
+
+
+{% block sidebar %}
+
+<a
+    class="nav-link active"
+    href="{% url 'officer_dashboard' %}"
+>
+    Dashboard
+</a>
+
+<a
+    class="nav-link"
+    href="{% url 'officer_dashboard' %}#queue"
+>
+    Applications
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-head">
+    <h1>Review Queue</h1>
+</div>
+
+
+<!-- Statistics -->
+
+<div class="grid stats">
+
+    <div class="card">
+        <div class="stat-n">
+            {{ total_applications }}
+        </div>
+
+        <div class="stat-l">
+            Total Applications
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="stat-n">
+            {{ pending_applications }}
+        </div>
+
+        <div class="stat-l">
+            Pending Reviews
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="stat-n">
+            {{ review_applications }}
+        </div>
+
+        <div class="stat-l">
+            Under Review
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="stat-n">
+            {{ approved_applications }}
+        </div>
+
+        <div class="stat-l">
+            Approved
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="stat-n">
+            {{ rejected_applications }}
+        </div>
+
+        <div class="stat-l">
+            Rejected
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Application Queue -->
+
+<h2 id="queue">
+    Applications Requiring Action
+</h2>
+
+
+<form
+    class="toolbar"
+    method="get"
+    role="search"
+>
+
+    <div class="field">
+
+        <label
+            class="skip"
+            for="q"
+        >
+            Search
+        </label>
+
+        <input
+            class="input"
+            id="q"
+            name="q"
+            type="search"
+            placeholder="Search customer..."
+            data-table-search
+        >
+
+    </div>
+
+
+    <div class="field">
+
+        <label
+            class="skip"
+            for="status"
+        >
+            Status
+        </label>
+
+        <select
+            class="input"
+            id="status"
+            name="status"
+        >
+
+            <option value="">
+                All Statuses
+            </option>
+
+            <option value="pending">
+                Pending
+            </option>
+
+            <option value="review">
+                Under Review
+            </option>
+
+            <option value="approved">
+                Approved
+            </option>
+
+            <option value="rejected">
+                Rejected
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <button
+        class="btn btn-ghost"
+        type="submit"
+    >
+        Apply Filters
+    </button>
+
+</form>
+
+
+{% if applications %}
+
+<div class="table-wrap">
+
+    <table id="dataTable">
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    ID
+                </th>
+
+                <th>
+                    Customer
+                </th>
+
+                <th>
+                    Loan Type
+                </th>
+
+                <th>
+                    Amount
+                </th>
+
+                <th>
+                    Applied
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for application in applications %}
+
+            <tr>
+
+                <td>
+                    LF-{{ application.id }}
+                </td>
+
+
+                <td>
+                    {{ application.customer.username }}
+                </td>
+
+
+                <td>
+                    {{ application.get_loan_type_display }}
+                </td>
+
+
+                <td>
+                    ₹{{ application.amount|floatformat:0 }}
+                </td>
+
+
+                <td>
+                    {{ application.created_at|date:"d M Y" }}
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="badge badge-{{ application.status|slugify }}"
+                    >
+                        {{ application.get_status_display }}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <a
+                        href="{% url 'review_application' application.id %}"
+                    >
+                        Review
+                    </a>
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+
+{% else %}
+
+<div class="card empty">
+
+    <h3>
+        Queue is Clear
+    </h3>
+
+    <p>
+        New applications that need review will appear here.
+    </p>
+
+</div>
+
+{% endif %}
+
+
+{% endblock %}

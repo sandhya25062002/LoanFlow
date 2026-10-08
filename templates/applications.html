@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}My applications{% endblock %}
+{% block nav_apps %}active{% endblock %}
+{% block content %}
+<div class="page-head"><div><div class="crumbs"><a href="{% url 'dashboard' %}">Dashboard</a> / My applications</div><h1>My applications</h1></div>
+  <a class="btn btn-primary" href="{% url 'apply_loan' %}">Apply for new loan</a></div>
+<form class="toolbar" method="get" role="search">
+  <div class="field"><label class="skip" for="q">Search</label><input class="input" id="q" name="q" type="search" placeholder="Search by ID or loan type" value="{{ request.GET.q }}" data-table-search></div>
+  <div class="field"><label class="skip" for="status">Status</label><select class="input" id="status" name="status"><option value="">All statuses</option><option value="pending">Pending</option><option value="under_review">Under review</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select></div>
+  <div class="field"><label class="skip" for="type">Loan type</label><select class="input" id="type" name="type"><option value="">All loan types</option>{% for t in loan_types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}</select></div>
+  <div class="field"><label class="skip" for="sort">Sort</label><select class="input" id="sort" name="sort"><option value="-created_at">Newest first</option><option value="created_at">Oldest first</option><option value="-amount">Highest amount</option></select></div>
+  <button class="btn btn-ghost" type="submit">Apply filters</button>
+</form>
+{% if applications %}
+<div class="table-wrap"><table id="dataTable">
+  <thead><tr><th>Application ID</th><th>Loan type</th><th>Amount</th><th>Tenure</th><th>Applied date</th><th>Status</th><th>Action</th></tr></thead>
+  <tbody>{% for application in applications %}
+    <tr><td>LF-{{ application.id }}</td><td>{{ application.loan_type }}</td><td>₹{{ application.amount|floatformat:0 }}</td><td>{{ application.tenure }} months</td><td>{{ application.created_at|date:"d M Y" }}</td>
+    <td><span class="badge badge-{{ application.status|slugify }}">{{ application.get_status_display }}</span></td><td><a href="{% url 'application_detail' application.id %}">View details</a></td></tr>
+  {% endfor %}</tbody></table></div>
+{% if is_paginated %}<nav class="pager" aria-label="Pagination">
+  {% if page_obj.has_previous %}<a class="btn btn-ghost" href="?page={{ page_obj.previous_page_number }}">Previous</a>{% endif %}
+  <span class="btn btn-ghost" aria-current="page">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a class="btn btn-ghost" href="?page={{ page_obj.next_page_number }}">Next</a>{% endif %}</nav>{% endif %}
+{% else %}
+<div class="card empty"><h3>No applications found</h3><p>When you submit a loan application it will appear here with its current status.</p><a class="btn btn-primary" href="{% url 'apply_loan' %}">Start an application</a></div>
+{% endif %}
+{% endblock %}

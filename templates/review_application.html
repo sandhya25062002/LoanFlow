@@ -1,0 +1,625 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Review LF-{{ application.id }}
+{% endblock %}
+
+
+{% block sidebar %}
+
+<a
+    class="nav-link"
+    href="{% url 'officer_dashboard' %}"
+>
+    Dashboard
+</a>
+
+<a
+    class="nav-link active"
+    href="{% url 'officer_dashboard' %}#queue"
+>
+    Applications
+</a>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-head">
+
+    <div>
+
+        <div class="crumbs">
+
+            <a href="{% url 'officer_dashboard' %}">
+                Dashboard
+            </a>
+
+            /
+
+            Review Application
+
+        </div>
+
+        <h1>
+            Review LF-{{ application.id }}
+        </h1>
+
+    </div>
+
+
+    <span class="badge badge-{{ application.status|slugify }}">
+
+        {{ application.get_status_display }}
+
+    </span>
+
+</div>
+
+
+<div class="split">
+
+
+    <!-- LEFT SIDE -->
+
+    <div class="grid">
+
+
+        <!-- Customer Information -->
+
+        <section class="card">
+
+            <h2>
+                Customer Information
+            </h2>
+
+            <dl class="kv">
+
+                <dt>
+                    Name
+                </dt>
+
+                <dd>
+                    {{ application.customer.get_full_name|default:application.customer.username }}
+                </dd>
+
+
+                <dt>
+                    Username
+                </dt>
+
+                <dd>
+                    {{ application.customer.username }}
+                </dd>
+
+
+                <dt>
+                    Email
+                </dt>
+
+                <dd>
+                    {{ application.customer.email|default:"Not provided" }}
+                </dd>
+
+
+                <dt>
+                    Phone
+                </dt>
+
+                <dd>
+                    {% if application.customer.userprofile %}
+                        {{ application.customer.userprofile.phone|default:"Not provided" }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+                </dd>
+
+
+                <dt>
+                    Address
+                </dt>
+
+                <dd>
+                    {% if application.customer.userprofile %}
+                        {{ application.customer.userprofile.address|default:"Not provided" }}
+                    {% else %}
+                        Not provided
+                    {% endif %}
+                </dd>
+
+            </dl>
+
+        </section>
+
+
+        <!-- Loan Information -->
+
+        <section class="card">
+
+            <h2>
+                Loan & Financial Information
+            </h2>
+
+            <dl class="kv">
+
+                <dt>
+                    Loan Type
+                </dt>
+
+                <dd>
+                    {{ application.get_loan_type_display }}
+                </dd>
+
+
+                <dt>
+                    Loan Amount
+                </dt>
+
+                <dd>
+                    ₹{{ application.amount|floatformat:0 }}
+                </dd>
+
+
+                <dt>
+                    Tenure
+                </dt>
+
+                <dd>
+                    {{ application.tenure }} months
+                </dd>
+
+
+                <dt>
+                    Monthly Income
+                </dt>
+
+                <dd>
+                    ₹{{ application.monthly_income|floatformat:0 }}
+                </dd>
+
+
+                <dt>
+                    Purpose
+                </dt>
+
+                <dd>
+                    {{ application.purpose }}
+                </dd>
+
+
+                <dt>
+                    Applied On
+                </dt>
+
+                <dd>
+                    {{ application.created_at|date:"d M Y, h:i A" }}
+                </dd>
+
+            </dl>
+
+        </section>
+
+
+        <!-- Documents -->
+
+        <section class="card">
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    margin-bottom:16px;
+                "
+            >
+
+                <h2 style="margin:0;">
+                    Uploaded Documents
+                </h2>
+
+                <span class="help">
+                    {{ documents|length }} document{{ documents|length|pluralize }}
+                </span>
+
+            </div>
+
+
+            {% if documents %}
+
+                <div>
+
+                    {% for doc in documents %}
+
+                    <div
+                        style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                            gap:16px;
+                            padding:16px 0;
+                            border-bottom:1px solid #eee;
+                        "
+                    >
+
+                        <div>
+
+                            <strong>
+                                {{ doc.get_document_type_display }}
+                            </strong>
+
+                            <div class="help">
+                                Uploaded
+                                {{ doc.uploaded_at|date:"d M Y, h:i A" }}
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            style="
+                                display:flex;
+                                gap:10px;
+                                align-items:center;
+                                white-space:nowrap;
+                            "
+                        >
+
+                            <a
+                                href="{{ doc.document.url }}"
+                                target="_blank"
+                                rel="noopener"
+                            >
+                                Preview
+                            </a>
+
+                            <span>
+                                ·
+                            </span>
+
+                            <a
+                                href="{{ doc.document.url }}"
+                                download
+                            >
+                                Download
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+
+                    <h3>
+                        No Documents Uploaded
+                    </h3>
+
+                    <p>
+                        The customer has not uploaded any documents yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+
+    </div>
+
+
+    <!-- RIGHT SIDE -->
+
+    <form
+        class="card"
+        method="post"
+        id="reviewForm"
+    >
+
+        {% csrf_token %}
+
+
+        <h2>
+            Application Review
+        </h2>
+
+
+        <p class="help">
+            Verify the customer's information and documents
+            before changing the application status.
+        </p>
+
+
+        <!-- Verification Checklist -->
+
+        <fieldset
+            style="
+                border:0;
+                padding:0;
+                margin:20px 0;
+            "
+        >
+
+            <legend
+                style="
+                    font-weight:600;
+                    margin-bottom:14px;
+                "
+            >
+                Verification Checklist
+            </legend>
+
+
+            <label
+                style="
+                    display:block;
+                    margin-bottom:14px;
+                    font-weight:500;
+                "
+            >
+
+                <input
+                    type="checkbox"
+                    id="identityCheck"
+                >
+
+                Identity document verified
+
+            </label>
+
+
+            <label
+                style="
+                    display:block;
+                    margin-bottom:14px;
+                    font-weight:500;
+                "
+            >
+
+                <input
+                    type="checkbox"
+                    id="incomeCheck"
+                >
+
+                Income document verified
+
+            </label>
+
+
+            <label
+                style="
+                    display:block;
+                    margin-bottom:14px;
+                    font-weight:500;
+                "
+            >
+
+                <input
+                    type="checkbox"
+                    id="addressCheck"
+                >
+
+                Address document verified
+
+            </label>
+
+        </fieldset>
+
+
+        <!-- Remarks -->
+
+        <div class="field">
+
+            <label for="remarks">
+                Officer Remarks
+            </label>
+
+            <textarea
+                class="input"
+                id="remarks"
+                name="remarks"
+                rows="4"
+                placeholder="Add remarks about your verification..."
+            ></textarea>
+
+        </div>
+
+
+        <input
+            type="hidden"
+            name="status"
+            id="statusInput"
+        >
+
+
+        <!-- Actions -->
+
+        <div
+            style="
+                margin-top:20px;
+                display:grid;
+                gap:10px;
+            "
+        >
+
+            <button
+                class="btn btn-ghost"
+                type="button"
+                data-set="review"
+            >
+                Mark Under Review
+            </button>
+
+
+            <button
+                class="btn btn-primary"
+                type="button"
+                data-set="approved"
+            >
+                Approve Application
+            </button>
+
+
+            <button
+                class="btn btn-danger"
+                type="button"
+                data-set="rejected"
+            >
+                Reject Application
+            </button>
+
+        </div>
+
+
+        <!-- Confirmation -->
+
+        <div
+            id="confirmationBox"
+            style="
+                display:none;
+                margin-top:20px;
+                padding:16px;
+                border:1px solid #ddd;
+                border-radius:10px;
+            "
+        >
+
+            <strong>
+                Confirm Action
+            </strong>
+
+            <p
+                id="confirmationText"
+                class="help"
+            >
+                Are you sure?
+            </p>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    margin-top:12px;
+                "
+            >
+
+                <button
+                    class="btn btn-primary"
+                    type="submit"
+                >
+                    Confirm
+                </button>
+
+
+                <button
+                    class="btn btn-ghost"
+                    type="button"
+                    id="cancelAction"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+const statusInput =
+    document.getElementById('statusInput');
+
+const confirmationBox =
+    document.getElementById('confirmationBox');
+
+const confirmationText =
+    document.getElementById('confirmationText');
+
+const cancelAction =
+    document.getElementById('cancelAction');
+
+
+document
+    .querySelectorAll('[data-set]')
+    .forEach(function(button) {
+
+        button.addEventListener(
+            'click',
+            function() {
+
+                const status =
+                    button.dataset.set;
+
+                statusInput.value =
+                    status;
+
+
+                let message = '';
+
+
+                if (status === 'review') {
+
+                    message =
+                        'Mark this application as Under Review?';
+
+                }
+
+                else if (status === 'approved') {
+
+                    message =
+                        'Are you sure you want to approve this application?';
+
+                }
+
+                else if (status === 'rejected') {
+
+                    message =
+                        'Are you sure you want to reject this application?';
+
+                }
+
+
+                confirmationText.textContent =
+                    message;
+
+
+                confirmationBox.style.display =
+                    'block';
+
+            }
+        );
+
+    });
+
+
+cancelAction.addEventListener(
+    'click',
+    function() {
+
+        statusInput.value = '';
+
+        confirmationBox.style.display =
+            'none';
+
+    }
+);
+
+</script>
+
+{% endblock %}

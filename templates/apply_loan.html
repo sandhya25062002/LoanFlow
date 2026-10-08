@@ -1,0 +1,620 @@
+{% extends 'base.html' %}
+
+{% block title %}Apply for a Loan{% endblock %}
+
+{% block nav_apply %}active{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <div class="crumbs">
+            <a href="{% url 'dashboard' %}">Dashboard</a> / Apply
+        </div>
+
+        <h1>Apply for a Loan</h1>
+    </div>
+</div>
+
+
+<form method="post" enctype="multipart/form-data" data-loading novalidate>
+
+    {% csrf_token %}
+
+    <div class="split">
+
+        <!-- =========================
+             LEFT SIDE
+        ========================== -->
+
+        <div class="grid">
+
+            <!-- Personal Information -->
+
+            <section class="card">
+
+                <h2>Personal Information</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="full_name">Full Name</label>
+
+                        <input
+                            class="input"
+                            id="full_name"
+                            name="full_name"
+                            type="text"
+                            value="{{ user.get_full_name }}"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="phone">Phone</label>
+
+                        <input
+                            class="input"
+                            id="phone"
+                            name="phone"
+                            type="tel"
+                            value="{{ user.userprofile.phone }}"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="email">Email</label>
+
+                        <input
+                            class="input"
+                            id="email"
+                            name="email"
+                            type="email"
+                            value="{{ user.email }}"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="address">Address</label>
+
+                        <input
+                            class="input"
+                            id="address"
+                            name="address"
+                            type="text"
+                            value="{{ user.userprofile.address }}"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Loan Information -->
+
+            <section class="card">
+
+                <h2>Loan Information</h2>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="loan_type">Loan Type</label>
+
+                        <select
+                            class="input"
+                            id="loan_type"
+                            name="loan_type"
+                            required
+                        >
+                            <option value="">Select</option>
+
+                            <option value="personal">
+                                Personal Loan
+                            </option>
+
+                            <option value="home">
+                                Home Loan
+                            </option>
+
+                            <option value="education">
+                                Education Loan
+                            </option>
+
+                            <option value="business">
+                                Business Loan
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="field">
+                        <label for="amount">
+                            Loan Amount (₹)
+                        </label>
+
+                        <input
+                            class="input"
+                            id="amount"
+                            name="amount"
+                            type="number"
+                            min="10000"
+                            step="1000"
+                            placeholder="Enter loan amount"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="tenure">
+                            Tenure (Months)
+                        </label>
+
+                        <input
+                            class="input"
+                            id="tenure"
+                            name="tenure"
+                            type="number"
+                            min="6"
+                            max="360"
+                            placeholder="Enter tenure"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="monthly_income">
+                            Monthly Income (₹)
+                        </label>
+
+                        <input
+                            class="input"
+                            id="monthly_income"
+                            name="monthly_income"
+                            type="number"
+                            min="0"
+                            placeholder="Enter monthly income"
+                            required
+                        >
+                    </div>
+
+
+                    <div class="field">
+                        <label for="employment_type">
+                            Employment Type
+                        </label>
+
+                        <select
+                            class="input"
+                            id="employment_type"
+                            name="employment_type"
+                        >
+                            <option value="Salaried">
+                                Salaried
+                            </option>
+
+                            <option value="Self-employed">
+                                Self-employed
+                            </option>
+
+                            <option value="Business owner">
+                                Business Owner
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="field full">
+                        <label for="purpose">
+                            Loan Purpose
+                        </label>
+
+                        <textarea
+                            class="input"
+                            id="purpose"
+                            name="purpose"
+                            rows="4"
+                            placeholder="Explain the purpose of the loan"
+                            required
+                        ></textarea>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- Documents -->
+
+            <section class="card">
+
+                <h2>Documents</h2>
+
+                <p class="help">
+                    PDF, JPG or PNG. Maximum 5 MB per file.
+                </p>
+
+
+                <!-- Identity Proof -->
+
+                <div class="field">
+
+                    <label for="identity_proof">
+                        Identity Proof
+                    </label>
+
+                    <div class="drop" data-drop>
+
+                        <input
+                            class="skip"
+                            id="identity_proof"
+                            name="identity_proof"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            data-file
+                        >
+
+                        Drag a file here or <u>browse</u>
+
+                    </div>
+
+                    <ul class="files"></ul>
+
+                </div>
+
+
+                <!-- Income Proof -->
+
+                <div class="field">
+
+                    <label for="income_proof">
+                        Income Proof
+                    </label>
+
+                    <div class="drop" data-drop>
+
+                        <input
+                            class="skip"
+                            id="income_proof"
+                            name="income_proof"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            data-file
+                        >
+
+                        Drag a file here or <u>browse</u>
+
+                    </div>
+
+                    <ul class="files"></ul>
+
+                </div>
+
+
+                <!-- Address Proof -->
+
+                <div class="field">
+
+                    <label for="address_proof">
+                        Address Proof
+                    </label>
+
+                    <div class="drop" data-drop>
+
+                        <input
+                            class="skip"
+                            id="address_proof"
+                            name="address_proof"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            data-file
+                        >
+
+                        Drag a file here or <u>browse</u>
+
+                    </div>
+
+                    <ul class="files"></ul>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+        <!-- =========================
+             RIGHT SIDE - SUMMARY
+        ========================== -->
+
+        <aside class="card" aria-labelledby="sum">
+
+            <h2 id="sum">
+                Application Summary
+            </h2>
+
+
+            <dl
+                class="kv"
+                style="grid-template-columns: 1fr auto"
+            >
+
+                <dt>Loan Type</dt>
+                <dd id="s_type">-</dd>
+
+
+                <dt>Amount</dt>
+                <dd id="s_amount">-</dd>
+
+
+                <dt>Tenure</dt>
+                <dd id="s_tenure">-</dd>
+
+
+                <dt>Documents</dt>
+                <dd id="s_docs">0 of 3</dd>
+
+            </dl>
+
+
+            <hr
+                style="
+                    border: 0;
+                    border-top: 1px solid var(--line);
+                    margin: 16px 0;
+                "
+            >
+
+
+            <button
+                class="btn btn-primary"
+                type="submit"
+                name="action"
+                value="submit"
+                style="width: 100%; justify-content: center;"
+            >
+                Submit Application
+            </button>
+
+
+            <button
+                class="btn btn-ghost"
+                type="submit"
+                name="action"
+                value="draft"
+                style="
+                    width: 100%;
+                    justify-content: center;
+                    margin-top: 8px;
+                "
+            >
+                Save Draft
+            </button>
+
+        </aside>
+
+    </div>
+
+</form>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+(function () {
+
+    var $ = function (selector) {
+        return document.querySelector(selector);
+    };
+
+
+    /* =========================
+       APPLICATION SUMMARY
+    ========================== */
+
+    var summaryFields = [
+        ['loan_type', 's_type'],
+        ['amount', 's_amount'],
+        ['tenure', 's_tenure']
+    ];
+
+
+    summaryFields.forEach(function (pair) {
+
+        var input = $('#' + pair[0]);
+        var output = $('#' + pair[1]);
+
+        input.addEventListener('input', function (event) {
+
+            output.textContent =
+                event.target.value || '-';
+
+        });
+
+    });
+
+
+    /* =========================
+       DOCUMENT COUNTER
+    ========================== */
+
+    function countDocuments() {
+
+        var count = 0;
+
+        document
+            .querySelectorAll('[data-file]')
+            .forEach(function (input) {
+
+                if (input.files.length) {
+                    count++;
+                }
+
+            });
+
+        $('#s_docs').textContent =
+            count + ' of 3';
+    }
+
+
+    /* =========================
+       DRAG & DROP DOCUMENTS
+    ========================== */
+
+    document
+        .querySelectorAll('[data-drop]')
+        .forEach(function (dropZone) {
+
+            var input =
+                dropZone.querySelector('input');
+
+            var fileList =
+                dropZone.parentNode.querySelector('.files');
+
+
+            dropZone.addEventListener(
+                'click',
+                function () {
+                    input.click();
+                }
+            );
+
+
+            ['dragover', 'dragenter'].forEach(
+                function (eventName) {
+
+                    dropZone.addEventListener(
+                        eventName,
+                        function (event) {
+
+                            event.preventDefault();
+
+                            dropZone.classList.add('over');
+
+                        }
+                    );
+
+                }
+            );
+
+
+            ['dragleave', 'drop'].forEach(
+                function (eventName) {
+
+                    dropZone.addEventListener(
+                        eventName,
+                        function () {
+
+                            dropZone.classList.remove('over');
+
+                        }
+                    );
+
+                }
+            );
+
+
+            dropZone.addEventListener(
+                'drop',
+                function (event) {
+
+                    event.preventDefault();
+
+                    input.files =
+                        event.dataTransfer.files;
+
+                    showFile();
+
+                }
+            );
+
+
+            input.addEventListener(
+                'change',
+                showFile
+            );
+
+
+            function showFile() {
+
+                fileList.innerHTML = '';
+
+                var file = input.files[0];
+
+                if (!file) {
+
+                    countDocuments();
+
+                    return;
+
+                }
+
+
+                var isValid =
+                    file.size <= 5 * 1024 * 1024;
+
+
+                var listItem =
+                    document.createElement('li');
+
+
+                listItem.innerHTML = `
+                    <span></span>
+
+                    <span class="prog">
+                        <i style="width: ${isValid ? 100 : 0}%"></i>
+                    </span>
+
+                    <button
+                        type="button"
+                        class="btn btn-ghost"
+                    >
+                        Remove
+                    </button>
+                `;
+
+
+                listItem.firstChild.textContent =
+                    file.name +
+                    (isValid ? '' : ' (over 5 MB)');
+
+
+                fileList.appendChild(listItem);
+
+
+                listItem
+                    .querySelector('button')
+                    .onclick = function () {
+
+                        input.value = '';
+
+                        fileList.innerHTML = '';
+
+                        countDocuments();
+
+                    };
+
+
+                countDocuments();
+
+            }
+
+        });
+
+})();
+
+</script>
+
+{% endblock %}

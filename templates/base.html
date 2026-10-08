@@ -1,0 +1,40 @@
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}LoanFlow{% endblock %} | LoanFlow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+{% block page %}{% if user.is_authenticated %}
+<aside class="sidebar" id="sidebar" aria-label="Main navigation">
+  <a class="brand" href="/"><span class="brand-mark">L</span>LoanFlow</a>
+  <nav>
+    {% block sidebar %}
+    <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}">Dashboard</a>
+    <a class="nav-link {% block nav_apply %}{% endblock %}" href="{% url 'apply_loan' %}">Apply for loan</a>
+    <a class="nav-link {% block nav_apps %}{% endblock %}" href="{% url 'applications' %}">My applications</a>
+    <a class="nav-link {% block nav_profile %}{% endblock %}" href="{% url 'profile' %}">Profile</a>
+    {% endblock %}
+  </nav>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <button class="btn btn-ghost menu-btn" id="menuBtn" aria-controls="sidebar" aria-expanded="false" aria-label="Open menu">Menu</button>
+    <span></span>
+    <div><strong>{{ user.username }}</strong> &nbsp;<form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button class="btn btn-ghost" type="submit">Log out</button></form></div>
+  </header>
+  <main class="content" id="main">
+    {% if messages %}{% for m in messages %}<div class="alert alert-{% if m.tags == 'error' %}error{% else %}success{% endif %}" role="alert">{{ m }}</div>{% endfor %}{% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+{% endif %}{% endblock %}
+<script src="{% static 'js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

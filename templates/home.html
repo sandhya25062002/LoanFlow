@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Loan applications, tracked{% endblock %}
+{% block page %}
+<header class="pub-nav"><a class="brand" href="/"><span class="brand-mark">L</span>LoanFlow</a>
+  <nav class="pub-actions" aria-label="Account"><a class="btn btn-ghost" href="{% url 'login' %}">Log in</a><a class="btn btn-primary" href="{% url 'register' %}">Register</a></nav></header>
+<main id="main">
+<section class="hero"><h1>Apply for the right loan. Track every step with confidence.</h1>
+  <p>Submit your application and documents in one place, then follow the review from submission to decision.</p>
+  <a class="btn btn-primary" href="{% url 'apply_loan' %}">Apply for a loan</a> <a class="btn btn-ghost" href="#process">See how it works</a></section>
+<section class="section"><h2>Built for clear, documented lending</h2><div class="grid cols">
+  <div class="card"><h3>One application form</h3><p>Personal details, loan terms and documents are collected in a single guided form.</p></div>
+  <div class="card"><h3>Live status</h3><p>See whether your application is pending, under review, approved or rejected.</p></div>
+  <div class="card"><h3>Officer review</h3><p>Loan officers check documents against a checklist and record remarks with each decision.</p></div></div></section>
+<section class="section" id="process"><h2>How it works</h2><ol class="timeline" style="margin-top:20px">
+  <li class="done"><strong>Create an account</strong><small>Register as a customer in a few minutes.</small></li>
+  <li class="done"><strong>Apply and upload documents</strong><small>Identity, income and address proof.</small></li>
+  <li class="current"><strong>Officer review</strong><small>Your documents and details are verified.</small></li>
+  <li><strong>Decision</strong><small>Approved or rejected, with remarks.</small></li></ol></section>
+<section class="section"><div class="card"><h2>Your data is handled with care</h2><p style="margin:0">Access is limited by role: customers see their own applications, officers see assigned reviews, admins manage the system.</p></div></section>
+<section class="section"><h2>Frequently asked questions</h2>
+  <details><summary>Which documents do I need?</summary><p>Identity proof, income proof and address proof.</p></details>
+  <details><summary>How do I know the status of my application?</summary><p>Open My applications and select an application to see its timeline.</p></details>
+  <details><summary>Can I edit an application after submitting?</summary><p>Contact the reviewing officer. Drafts can be edited before submission.</p></details></section>
+</main><footer class="footer"><span>© LoanFlow. All rights reserved.</span><span>Privacy · Terms · Support</span></footer>
+{% endblock %}

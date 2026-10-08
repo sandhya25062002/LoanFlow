@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Upload document
+{% endblock %}
+
+{% block nav_apps %}
+    active
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+
+    <div>
+
+        <div class="crumbs">
+
+            <a href="{% url 'applications' %}">
+                My applications
+            </a>
+
+            /
+
+            <a href="{% url 'application_detail' application.id %}">
+                LF-{{ application.id }}
+            </a>
+
+            / Upload document
+
+        </div>
+
+        <h1>
+            Upload document
+        </h1>
+
+    </div>
+
+    <span
+        class="badge badge-{{ application.status|slugify }}"
+        style="font-size:.95rem;padding:6px 14px"
+    >
+        {{ application.get_status_display }}
+    </span>
+
+</div>
+
+
+<div class="split">
+
+
+    <!-- ========================================= -->
+    <!-- UPLOAD FORM -->
+    <!-- ========================================= -->
+
+    <section class="card">
+
+        {% if form.errors %}
+
+            <div
+                class="alert alert-error"
+                role="alert"
+            >
+                The document could not be uploaded.
+                Check the highlighted fields and try again.
+            </div>
+
+        {% endif %}
+
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            data-loading
+        >
+
+            {% csrf_token %}
+
+
+            <!-- ========================================= -->
+            <!-- DOCUMENT TYPE -->
+            <!-- ========================================= -->
+
+            <div class="field">
+
+                <label for="id_document_type">
+                    Document type
+                </label>
+
+                <select
+                    class="input"
+                    id="id_document_type"
+                    name="document_type"
+                    required
+                >
+
+                    <option value="">
+                        Select a document type
+                    </option>
+
+                    <option
+                        value="identity"
+                        {% if selected_type == 'identity' %}
+                            selected
+                        {% endif %}
+                    >
+                        Identity proof
+                    </option>
+
+                    <option
+                        value="income"
+                        {% if selected_type == 'income' %}
+                            selected
+                        {% endif %}
+                    >
+                        Income proof
+                    </option>
+
+                    <option
+                        value="address"
+                        {% if selected_type == 'address' %}
+                            selected
+                        {% endif %}
+                    >
+                        Address proof
+                    </option>
+
+                </select>
+
+
+                {% for error in form.document_type.errors %}
+
+                    <div class="error">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- FILE -->
+            <!-- ========================================= -->
+
+            <div class="field">
+
+                <label for="id_document">
+                    File
+                </label>
+
+
+                <div
+                    class="drop"
+                    id="dropZone"
+                >
+
+                    <input
+                        class="skip"
+                        id="id_document"
+                        name="document"
+                        type="file"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        required
+                    >
+
+
+                    <p style="margin:0 0 10px">
+
+                        Drag a file here, or
+
+                    </p>
+
+
+                    <button
+                        class="btn btn-ghost"
+                        type="button"
+                        id="browseBtn"
+                    >
+                        Browse files
+                    </button>
+
+
+                    <p
+                        class="help"
+                        style="margin:10px 0 0"
+                    >
+                        PDF, JPG, JPEG or PNG.
+                        Maximum 5 MB.
+                    </p>
+
+                </div>
+
+
+                {% for error in form.document.errors %}
+
+                    <div class="error">
+                        {{ error }}
+                    </div>
+
+                {% endfor %}
+
+
+                <div
+                    class="error"
+                    id="fileError"
+                    role="alert"
+                    hidden
+                >
+                </div>
+
+
+                <ul
+                    class="files"
+                    id="filePreview"
+                >
+                </ul>
+
+            </div>
+
+
+
+            <!-- ========================================= -->
+            <!-- BUTTONS -->
+            <!-- ========================================= -->
+
+            <button
+                class="btn btn-primary"
+                type="submit"
+                id="uploadBtn"
+                disabled
+            >
+                Upload document
+            </button>
+
+
+            <a
+                class="btn btn-ghost"
+                href="{% url 'application_detail' application.id %}"
+            >
+                Cancel
+            </a>
+
+        </form>
+
+    </section>
+
+
+
+    <!-- ========================================= -->
+    <!-- APPLICATION INFORMATION -->
+    <!-- ========================================= -->
+
+    <aside class="card">
+
+        <h2>
+            Application
+        </h2>
+
+
+        <dl
+            class="kv"
+            style="grid-template-columns:110px 1fr"
+        >
+
+            <dt>
+                Application ID
+            </dt>
+
+            <dd>
+                LF-{{ application.id }}
+            </dd>
+
+
+            <dt>
+                Loan type
+            </dt>
+
+            <dd>
+                {{ application.get_loan_type_display }}
+            </dd>
+
+
+            <dt>
+                Status
+            </dt>
+
+            <dd>
+                {{ application.get_status_display }}
+            </dd>
+
+        </dl>
+
+
+        <hr
+            style="
+                border:0;
+                border-top:1px solid var(--line);
+                margin:16px 0
+            "
+        >
+
+
+        <h2>
+            Uploaded so far
+        </h2>
+
+
+        <ul
+            style="
+                list-style:none;
+                padding:0;
+                margin:0
+            "
+        >
+
+            {% for doc in application.documents.all %}
+
+                <li style="padding:6px 0">
+
+                    ✓ {{ doc.get_document_type_display }}
+
+                </li>
+
+            {% empty %}
+
+                <li class="help">
+                    No documents uploaded yet.
+                </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </aside>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+(function () {
+
+    var input = document.getElementById('id_document');
+
+    var zone = document.getElementById('dropZone');
+
+    var list = document.getElementById('filePreview');
+
+    var errorBox = document.getElementById('fileError');
+
+    var uploadButton = document.getElementById('uploadBtn');
+
+    var MAX_SIZE = 5 * 1024 * 1024;
+
+    var ALLOWED = /\.(pdf|jpe?g|png)$/i;
+
+
+
+    function formatSize(bytes) {
+
+        if (bytes < 1048576) {
+
+            return Math.round(bytes / 1024) + ' KB';
+
+        }
+
+        return (bytes / 1048576).toFixed(1) + ' MB';
+
+    }
+
+
+
+    function clearFile() {
+
+        input.value = '';
+
+        list.innerHTML = '';
+
+        uploadButton.disabled = true;
+
+    }
+
+
+
+    function showFile() {
+
+        list.innerHTML = '';
+
+        errorBox.hidden = true;
+
+        var file = input.files[0];
+
+
+        if (!file) {
+
+            uploadButton.disabled = true;
+
+            return;
+
+        }
+
+
+        if (!ALLOWED.test(file.name)) {
+
+            errorBox.textContent =
+                'Unsupported format. Upload a PDF, JPG, JPEG or PNG file.';
+
+            errorBox.hidden = false;
+
+            clearFile();
+
+            return;
+
+        }
+
+
+        if (file.size > MAX_SIZE) {
+
+            errorBox.textContent =
+                'This file is ' +
+                formatSize(file.size) +
+                '. The maximum size is 5 MB.';
+
+            errorBox.hidden = false;
+
+            clearFile();
+
+            return;
+
+        }
+
+
+        var item = document.createElement('li');
+
+
+        item.innerHTML =
+            '<span></span>' +
+            '<button type="button" class="btn btn-ghost">' +
+            'Remove' +
+            '</button>';
+
+
+        item.firstChild.textContent =
+            file.name +
+            ' (' +
+            formatSize(file.size) +
+            ')';
+
+
+        item
+            .querySelector('button')
+            .addEventListener(
+                'click',
+                clearFile
+            );
+
+
+        list.appendChild(item);
+
+        uploadButton.disabled = false;
+
+    }
+
+
+
+    document
+        .getElementById('browseBtn')
+        .addEventListener(
+            'click',
+            function () {
+
+                input.click();
+
+            }
+        );
+
+
+
+    input.addEventListener(
+        'change',
+        showFile
+    );
+
+
+
+    ['dragenter', 'dragover'].forEach(
+
+        function (eventName) {
+
+            zone.addEventListener(
+
+                eventName,
+
+                function (event) {
+
+                    event.preventDefault();
+
+                    zone.classList.add('over');
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+
+    ['dragleave', 'drop'].forEach(
+
+        function (eventName) {
+
+            zone.addEventListener(
+
+                eventName,
+
+                function () {
+
+                    zone.classList.remove('over');
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+
+    zone.addEventListener(
+
+        'drop',
+
+        function (event) {
+
+            event.preventDefault();
+
+            input.files =
+                event.dataTransfer.files;
+
+            showFile();
+
+        }
+
+    );
+
+})();
+
+</script>
+
+{% endblock %}

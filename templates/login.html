@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}Log in{% endblock %}
+{% block page %}
+<div class="auth">
+  <section class="auth-side">
+    <a class="brand" href="/"><span class="brand-mark">L</span>LoanFlow</a>
+    <h1>Every loan application, from first form to final decision.</h1>
+    <p>Sign in to submit documents, follow your application, or review your queue.</p>
+  </section>
+  <section class="auth-form">
+    <form method="post" data-loading novalidate>
+      {% csrf_token %}
+      <h1>Log in</h1>
+      <p class="help">Use your username or email address.</p>
+      {% if form.non_field_errors %}<div class="alert alert-error" role="alert">{{ form.non_field_errors.0 }}</div>{% endif %}
+      <div class="field">
+        <label for="id_username">Username or email</label>
+        <input class="input" id="id_username" name="username" type="text" autocomplete="username" value="{{ form.username.value|default:'' }}" required {% if form.username.errors %}aria-invalid="true"{% endif %}>
+        {% for e in form.username.errors %}<div class="error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field">
+        <label for="id_password">Password</label>
+        <div style="display:flex;gap:8px">
+          <input class="input" id="id_password" name="password" type="password" autocomplete="current-password" required {% if form.password.errors %}aria-invalid="true"{% endif %}>
+          <button class="btn btn-ghost" type="button" data-toggle-password="#id_password" aria-pressed="false">Show</button>
+        </div>
+        {% for e in form.password.errors %}<div class="error">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="field" style="display:flex;justify-content:space-between">
+        <label style="font-weight:500;margin:0"><input type="checkbox" name="remember"> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;justify-content:center">Log in</button>
+      <p class="help" style="margin-top:16px">New to LoanFlow? <a href="{% url 'register' %}">Create an account</a></p>
+    </form>
+  </section>
+</div>
+{% endblock %}
